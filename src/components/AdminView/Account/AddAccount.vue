@@ -11,7 +11,7 @@
         <el-text>可以使用换行来分割多个账号</el-text>
       </el-form-item>
       <el-form-item label="Cookie" prop="cookie">
-        <el-input type="textarea" v-model.trim="addAccountForm.cookie"></el-input>
+        <el-input type="textarea" v-model="addAccountForm.cookie"></el-input>
       </el-form-item>
     </el-form>
     <template #footer>
@@ -45,9 +45,10 @@ const addAccount = async (formEl: FormInstance | null) => {
 
   try {
     pending.value = true
-    await AccountApi.addAccount({
+    const res = await AccountApi.addAccount({
       cookie: addAccountForm.value.cookie.split('\n')
     })
+    if (res.data.have_repeat) ElMessage.info('存在重复的cookie,已自动过滤')
     ElMessage.success('添加成功')
   } finally {
     pending.value = false
