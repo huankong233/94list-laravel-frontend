@@ -2,8 +2,17 @@
   <el-card v-loading="pending">
     <h2>前台解析中心 | {{ getAppName() }}</h2>
 
-    <el-alert title="当前中转账号充足" type="success" v-if="config.have_account" />
-    <el-alert title="当前中转账号不足" type="error" v-else />
+    <el-alert
+      show-icon
+      type="warning"
+      :closable="false"
+      title="项目全部开源,开源地址: https://github.com/huankong233/94list-laravel"
+      @click="openWindow()"
+      class="cursor"
+    />
+
+    <el-alert class="alert" title="当前中转账号充足" type="success" v-if="config.have_account" />
+    <el-alert class="alert" title="当前中转账号不足" type="error" v-else />
 
     <el-alert
       class="alert"
@@ -59,9 +68,12 @@
         </el-button>
         <el-button type="primary" @click="copyLink(getFileListFormRef)">复制当前地址</el-button>
         <el-button type="primary" @click="goLogin()" v-if="getLoginState() === '0'">登陆</el-button>
-        <el-button type="danger" @click="mainStore.logout()" v-if="getLoginState() === '1'"
-          >注销</el-button
-        >
+        <el-button type="primary" @click="goAdmin()" v-if="getLoginRole() === 'admin'">
+          进入后台
+        </el-button>
+        <el-button type="danger" @click="mainStore.logout()" v-if="getLoginState() === '1'">
+          注销
+        </el-button>
       </el-form-item>
     </el-form>
   </el-card>
@@ -71,7 +83,7 @@
 import { useFileListStore } from '@/stores/fileListStore.js'
 import { useMainStore } from '@/stores/mainStore.js'
 import { copy } from '@/utils/copy.js'
-import { getAppName, getLoginState } from '@/utils/env.js'
+import { getAppName, getLoginRole, getLoginState } from '@/utils/env.js'
 import { formatBytes } from '@/utils/format.js'
 import type { RuleItem } from 'async-validator'
 import { ElMessage, type FormInstance, type FormRules } from 'element-plus'
@@ -169,6 +181,11 @@ onMounted(() => {
 
 const router = useRouter()
 const goLogin = () => router.push('/login')
+const goAdmin = () => router.push('/admin')
+
+function openWindow() {
+  window.open('https://github.com/huankong233/94list-laravel')
+}
 </script>
 
 <style lang="scss" scoped>
@@ -179,5 +196,9 @@ img:hover {
 a {
   text-decoration: none;
   color: inherit;
+}
+
+.cursor {
+  cursor: pointer;
 }
 </style>

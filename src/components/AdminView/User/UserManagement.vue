@@ -70,7 +70,7 @@
   <el-pagination
     v-model:current-page="currentPage"
     v-model:page-size="pageSize"
-    :page-sizes="[15, 30, 50, 100]"
+    :page-sizes="[15, 50, 100, 500, userList?.total ?? 100]"
     :total="userList?.total ?? 100"
     layout="sizes, prev, pager, next"
     @size-change="getUsers"
