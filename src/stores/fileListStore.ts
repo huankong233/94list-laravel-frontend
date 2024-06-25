@@ -2,6 +2,7 @@ import * as ParseApi from '@/apis/user/parse.js'
 import { ElMessage, type FormInstance } from 'element-plus'
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import { useMainStore } from './mainStore'
 
 export const useFileListStore = defineStore('fileListStore', () => {
   const pending = ref(false)
@@ -55,6 +56,13 @@ export const useFileListStore = defineStore('fileListStore', () => {
     }
   }
 
+  const vcode = ref({
+    hit_captcha: false,
+    vcode_str: '',
+    vcode_img: '',
+    vcode_input: ''
+  })
+
   const fileList = ref<ParseApi.fileList>({
     uk: 0,
     shareid: 0,
@@ -80,6 +88,11 @@ export const useFileListStore = defineStore('fileListStore', () => {
       ElMessage.error('文件夹不会被解析!')
     }
 
+    if (fs_ids.length > (useMainStore()?.config?.max_once ?? 20)) {
+      ElMessage.error(`一次最多解析${useMainStore().config.max_once}个文件`)
+      return
+    }
+
     let res
     try {
       pending.value = true
@@ -90,6 +103,11 @@ export const useFileListStore = defineStore('fileListStore', () => {
         fs_ids,
         password: getFileListForm.value.password,
         url: getFileListForm.value.url
+      }
+
+      if (vcode.value.hit_captcha) {
+        req.vcode_str = vcode.value.vcode_str
+        req.vcode_input = vcode.value.vcode_input
       }
 
       res = await ParseApi.getDownloadLinks(req)
@@ -111,6 +129,25 @@ export const useFileListStore = defineStore('fileListStore', () => {
             index: 0
           }
         })
+      }
+
+      vcode.value = {
+        hit_captcha: false,
+        vcode_str: '',
+        vcode_img: '',
+        vcode_input: ''
+      }
+    } catch (error) {
+      const { code, message } = error as { code?: number; message?: string }
+      if (code && message && message.includes('验证码')) {
+        const res = await ParseApi.getVcode()
+
+        vcode.value = {
+          hit_captcha: true,
+          vcode_str: res.data.vcode,
+          vcode_img: res.data.img,
+          vcode_input: ''
+        }
       }
     } finally {
       pending.value = false
@@ -150,6 +187,8 @@ export const useFileListStore = defineStore('fileListStore', () => {
     getDownloadLinks,
     limitForm,
     getLimit,
-    hitLimit
+    hitLimit,
+
+    vcode
   }
 })
