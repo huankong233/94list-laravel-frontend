@@ -14,6 +14,8 @@ export interface config {
   show_copyright: boolean
   custom_copyright: string
   min_single_file: number
+  token_mode: boolean
+  button_link: string
 }
 
 export const getConfig = () => axios.get<config>('/parse/config')
