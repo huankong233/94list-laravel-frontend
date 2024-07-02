@@ -15,6 +15,7 @@ export interface Account {
   vip_type: string
   switch: 0 | 1
   reason: string
+  prov: string | null
   svip_end_at: string
   last_use_at: string
   created_at: string
@@ -41,10 +42,13 @@ export const getAccount = (data: { page: number; size: number }) =>
   axios.get<getAccount>(`/admin/account?page=${data.page}&size=${data.size}`)
 
 export const updateAccount = (account: Account) =>
-  axios.patch<null>(`/admin/account`, { account_ids: [account.id] })
+  axios.patch<null>(`/admin/account/${account.id}`, account)
 
-export const updateAccounts = (account_ids: number[]) =>
-  axios.patch<null>(`/admin/account`, { account_ids })
+export const updateAccountInfo = (account: Account) =>
+  axios.patch<null>(`/admin/account/info`, { account_ids: [account.id] })
+
+export const updateAccountsInfo = (account_ids: number[]) =>
+  axios.patch<null>(`/admin/account/info`, { account_ids })
 
 export const deleteAccount = (account: Account) =>
   axios.delete<null>(`/admin/account`, { data: { account_ids: [account.id] } })

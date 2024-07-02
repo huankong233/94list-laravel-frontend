@@ -13,11 +13,11 @@
     <el-alert
       :closable="false"
       class="alert"
-      title="当前中转账号充足"
+      :title="`当前中转账号充足`"
       type="success"
       v-if="config.have_account"
     />
-    <el-alert :closable="false" class="alert" title="当前中转账号不足" type="error" v-else />
+    <el-alert :closable="false" class="alert" :title="`当前中转账号不足`" type="error" v-else />
 
     <el-alert
       class="alert"
@@ -41,7 +41,7 @@
       :closable="false"
       :title="
         limitMessage === ''
-          ? `当前${getFileListForm.token ? '卡密' : '用户组'}: ${limitForm.group_name} 剩余可解析文件数: ${limitForm.count} 剩余可解析大小: ${formatBytes(limitForm.size)} ${getFileListForm.token ? `到期时间: ${limitForm.expired_at ?? '未知'}` : ''}`
+          ? `当前${getFileListForm.token ? '卡密' : '用户组'}: ${limitForm.group_name} 剩余可解析文件数: ${limitForm.count} 剩余可解析大小: ${formatBytes(limitForm.size)} ${getFileListForm.token ? `到期时间: ${limitForm.expired_at ? new Date(limitForm.expired_at).toLocaleString() : '未知'}` : ''}`
           : limitMessage ?? '未知错误'
       "
     />
